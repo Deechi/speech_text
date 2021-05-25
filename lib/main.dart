@@ -23,6 +23,7 @@ class _MyAppState extends State<MyApp> {
   String _currentLocaleId = '';
   int resultListened = 0;
   List<LocaleName> _localeNames = [];
+  List<String> lastWordList = [];
   final SpeechToText speech = SpeechToText();
 
   @override
@@ -128,15 +129,20 @@ class _MyAppState extends State<MyApp> {
                 Expanded(
                   child: Stack(
                     children: <Widget>[
-                      Container(
-                        color: Theme.of(context).selectedRowColor,
-                        child: Center(
-                          child: Text(
-                            lastWords,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
+                      // Container(
+                      //   color: Theme.of(context).selectedRowColor,
+                      //   child: Center(
+                      //     child: Text(
+                      //       lastWords,
+                      //       textAlign: TextAlign.center,
+                      //     ),
+                      //   ),
+                      // ),
+                      ListView.builder(
+                          itemCount: lastWordList.length,
+                          itemBuilder: (BuildContext context, int index){
+                        return Text(lastWordList[index]);
+                      }),
                       Positioned.fill(
                         bottom: 10,
                         child: Align(
@@ -240,7 +246,8 @@ class _MyAppState extends State<MyApp> {
     ++resultListened;
     print('Result listener $resultListened');
     setState(() {
-      lastWords = '${result.recognizedWords} - ${result.finalResult}';
+      // lastWords = '${result.recognizedWords} - ${result.finalResult}';
+      lastWordList.add(result.recognizedWords);
     });
   }
 
