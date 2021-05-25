@@ -205,19 +205,21 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void startListening() {
+  void startListening() async{
     lastWords = '';
     lastError = '';
-    speech.listen(
-        onResult: resultListener,
-        listenFor: Duration(seconds: 5),
-        pauseFor: Duration(seconds: 5),
-        partialResults: false,
-        localeId: _currentLocaleId,
-        onSoundLevelChange: soundLevelListener,
-        cancelOnError: true,
-        listenMode: ListenMode.confirmation);
-    setState(() {});
+    while(true){
+      await speech.listen(
+          onResult: resultListener,
+          listenFor: Duration(seconds: 300),
+          pauseFor: Duration(seconds: 100),
+          partialResults: false,
+          localeId: _currentLocaleId,
+          onSoundLevelChange: soundLevelListener,
+          cancelOnError: true,
+          listenMode: ListenMode.confirmation);
+      setState(() {});
+    }
   }
 
   void stopListening() {
