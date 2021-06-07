@@ -29,6 +29,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    initSpeechState();
   }
 
   Future<void> initSpeechState() async {
@@ -59,24 +60,9 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Speech to Text Example'),
         ),
         body: Column(children: [
-          Center(
-            child: Text(
-              'Speech recognition available',
-              style: TextStyle(fontSize: 22.0),
-            ),
-          ),
           Container(
             child: Column(
               children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    FlatButton(
-                      child: Text('Initialize'),
-                      onPressed: _hasSpeech ? null : initSpeechState,
-                    ),
-                  ],
-                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
@@ -105,10 +91,10 @@ class _MyAppState extends State<MyApp> {
                       items: _localeNames
                           .map(
                             (localeName) => DropdownMenuItem(
-                          value: localeName.localeId,
-                          child: Text(localeName.name),
-                        ),
-                      )
+                              value: localeName.localeId,
+                              child: Text(localeName.name),
+                            ),
+                          )
                           .toList(),
                     ),
                   ],
@@ -120,29 +106,17 @@ class _MyAppState extends State<MyApp> {
             flex: 4,
             child: Column(
               children: <Widget>[
-                Center(
-                  child: Text(
-                    'Recognized Words',
-                    style: TextStyle(fontSize: 22.0),
-                  ),
-                ),
                 Expanded(
                   child: Stack(
                     children: <Widget>[
-                      // Container(
-                      //   color: Theme.of(context).selectedRowColor,
-                      //   child: Center(
-                      //     child: Text(
-                      //       lastWords,
-                      //       textAlign: TextAlign.center,
-                      //     ),
-                      //   ),
-                      // ),
-                      ListView.builder(
-                          itemCount: lastWordList.length,
-                          itemBuilder: (BuildContext context, int index){
-                        return Text(lastWordList[index]);
-                      }),
+                      Align(
+                        alignment: Alignment.center,
+                        child: ListView.builder(
+                            itemCount: lastWordList.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Text(lastWordList[index]);
+                            }),
+                      ),
                       Positioned.fill(
                         bottom: 10,
                         child: Align(
@@ -160,7 +134,7 @@ class _MyAppState extends State<MyApp> {
                               ],
                               color: Colors.white,
                               borderRadius:
-                              BorderRadius.all(Radius.circular(50)),
+                                  BorderRadius.all(Radius.circular(50)),
                             ),
                             child: IconButton(
                               icon: Icon(Icons.mic),
@@ -175,35 +149,19 @@ class _MyAppState extends State<MyApp> {
               ],
             ),
           ),
-          Expanded(
-            flex: 1,
-            child: Column(
-              children: <Widget>[
-                Center(
-                  child: Text(
-                    'Error Status',
-                    style: TextStyle(fontSize: 22.0),
-                  ),
-                ),
-                Center(
-                  child: Text(lastError),
-                ),
-              ],
-            ),
-          ),
           Container(
             padding: EdgeInsets.symmetric(vertical: 20),
             color: Theme.of(context).backgroundColor,
             child: Center(
               child: speech.isListening
                   ? Text(
-                "I'm listening...",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              )
+                      "I'm listening...",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    )
                   : Text(
-                'Not listening',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+                      'Not listening',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
             ),
           ),
         ]),
@@ -211,21 +169,21 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void startListening() async{
+  void startListening() async {
     lastWords = '';
     lastError = '';
-    while(true){
-      await speech.listen(
-          onResult: resultListener,
-          listenFor: Duration(seconds: 300),
-          pauseFor: Duration(seconds: 100),
-          partialResults: false,
-          localeId: _currentLocaleId,
-          onSoundLevelChange: soundLevelListener,
-          cancelOnError: true,
-          listenMode: ListenMode.confirmation);
-      setState(() {});
-    }
+    await speech.listen(
+        onResult: resultListener,
+        listenFor: Duration(seconds: 30),
+        pauseFor: Duration(seconds: 3),
+        partialResults: false,
+        localeId: _currentLocaleId,
+        onSoundLevelChange: soundLevelListener,
+        cancelOnError: true,
+        listenMode: ListenMode.confirmation);
+    setState(() {});
+
+    await startListening();
   }
 
   void stopListening() {
