@@ -7,12 +7,32 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
+
   @override
-  _MyAppState createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key key, this.title}) : super(key: key);
+
+
+  final String title;
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
   bool _hasSpeech = false;
   double level = 0.0;
   double minSoundLevel = 50000;
@@ -54,117 +74,84 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Speech to Text Example'),
         ),
-        body: Column(children: [
-          Container(
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    FlatButton(
-                      child: Text('Start'),
-                      onPressed: !_hasSpeech || speech.isListening
-                          ? null
-                          : startListening,
-                    ),
-                    FlatButton(
-                      child: Text('Stop'),
-                      onPressed: speech.isListening ? stopListening : null,
-                    ),
-                    FlatButton(
-                      child: Text('Cancel'),
-                      onPressed: speech.isListening ? cancelListening : null,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    DropdownButton(
-                      onChanged: (selectedVal) => _switchLang(selectedVal),
-                      value: _currentLocaleId,
-                      items: _localeNames
-                          .map(
-                            (localeName) => DropdownMenuItem(
-                              value: localeName.localeId,
-                              child: Text(localeName.name),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Stack(
-                    children: <Widget>[
-                      Align(
-                        alignment: Alignment.center,
-                        child: ListView.builder(
-                            itemCount: lastWordList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Text(lastWordList[index]);
-                            }),
+        body: Center(
+          child: Column(
+              children: [
+            Container(
+              child: DropdownButton(
+                onChanged: (selectedVal) => _switchLang(selectedVal),
+                value: _currentLocaleId,
+                items: _localeNames
+                    .map(
+                      (localeName) => DropdownMenuItem(
+                        value: localeName.localeId,
+                        child: Text(localeName.name),
                       ),
-                      Positioned.fill(
-                        bottom: 10,
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                    blurRadius: .26,
-                                    spreadRadius: level * 1.5,
-                                    color: Colors.black.withOpacity(.05))
-                              ],
-                              color: Colors.white,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50)),
-                            ),
-                            child: IconButton(
-                              icon: Icon(Icons.mic),
-                              onPressed: () => null,
-                            ),
-                          ),
+                    )
+                    .toList(),
+              ),
+            ),
+            SizedBox(
+              height: height * 0.05,
+            ),
+            Container(
+              height:  height * 0.7,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                        itemCount: lastWordList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Center(
+                            child: Text(lastWordList[index]),
+                          );
+                        }),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Stack(
+                children: <Widget>[
+                  Positioned.fill(
+                    bottom: 50,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: .26,
+                                spreadRadius: level * 1.5,
+                                color: Colors.black.withOpacity(.05))
+                          ],
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                        ),
+                        child: IconButton(
+                          icon: Icon(Icons.mic),
+                          onPressed: !_hasSpeech || speech.isListening
+                              ? null
+                              : startListening,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            color: Theme.of(context).backgroundColor,
-            child: Center(
-              child: speech.isListening
-                  ? Text(
-                      "I'm listening...",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )
-                  : Text(
-                      'Not listening',
-                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ]),
+          ]),
+        ),
       ),
     );
   }
