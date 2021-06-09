@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:speech_to_text/speech_recognition_error.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,6 +34,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  List<LocaleName> _localeNames = [];
+  String _currentLocaleId = '';
+
+  @override
+  void initState(){
+
+  }
 
   void _incrementCounter() {
     setState(() {
